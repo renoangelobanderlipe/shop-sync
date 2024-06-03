@@ -12,15 +12,15 @@ Ensure you have the following tools and technologies installed:
 ### Installation Steps
 
 1. **Clone the Repository**
-   - Navigate to [GitHub Repository](https://github.com/renoangelobanderlipe)
-   - Copy the repository URL: `https://github.com/renoangelobanderlipe`
+   - Navigate to [GitHub Repository](https://github.com/renoangelobanderlipe/shop-sync)
+   - Copy the repository URL: `https://github.com/renoangelobanderlipe/shop-sync`
    - Open your terminal and run:
      ```sh
-     git clone https://github.com/renoangelobanderlipe
+     git clone https://github.com/renoangelobanderlipe/shop-sync
      ```
    - Navigate to the project directory:
      ```sh
-     cd renoangelobanderlipe
+     cd shop-sync
      ```
 
 2. **Set Up Environment Variables**
