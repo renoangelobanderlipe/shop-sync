@@ -1,0 +1,175 @@
+/** @type {import('tailwindcss').Config} */
+const withMT = require("@material-tailwind/react/utils/withMT");
+
+module.exports = withMT({
+    content: [
+        "./index.html",
+        "./resources/js/**/*.{vue,js,ts,jsx,tsx}",
+        "./node_modules/@material-tailwind/react/components/**/*.{js,ts,jsx,tsx}",
+        "./node_modules/@material-tailwind/react/theme/components/**/*.{js,ts,jsx,tsx}",
+    ],
+    theme: {
+        screens: {
+            sm: "640px",
+            // => @media (min-width: 640px) { ... }
+
+            md: "768px",
+            // => @media (min-width: 768px) { ... }
+
+            lg: "1024px",
+            // => @media (min-width: 1024px) { ... }
+
+            xl: "1280px",
+            // => @media (min-width: 1280px) { ... }
+
+            "2xl": "1536px",
+            // => @media (min-width: 1536px) { ... }
+            "3xl": "1920px",
+        },
+
+        extend: {
+            colors: {
+                primary: {
+                    100: "#CCF4FE",
+                    200: "#9AE4FD",
+                    300: "#68CDF9",
+                    400: "#42B4F4",
+                    500: "#078DEE",
+                    600: "#056DCC",
+                    700: "#0351AB",
+                    800: "#02398A",
+                    900: "#012972",
+                },
+                neutral: {
+                    100: "#F9FAFB",
+                    200: "#F4F6F8",
+                    300: "#DFE3E8",
+                    400: "#C4CDD5",
+                    500: "#919EAB",
+                    600: "#637381",
+                    700: "#454F5B",
+                    800: "#212B36",
+                    900: "#161C24",
+                },
+                success: {
+                    100: "#F0FBD0",
+                    200: "#DEF8A3",
+                    300: "#C2EC72",
+                    400: "#A3D94D",
+                    500: "#79C11B",
+                    600: "#60A513",
+                    700: "#498A0D",
+                    800: "#356F08",
+                    900: "#275C05",
+                },
+                info: {
+                    100: "#D5F9FE",
+                    200: "#ADEEFE",
+                    300: "#83DEFE",
+                    400: "#64CCFD",
+                    500: "#32AFFC",
+                    600: "#2489D8",
+                    700: "#1967B5",
+                    800: "#0F4892",
+                    900: "#0B367A",
+                },
+                warning: {
+                    100: "#FFF6D8",
+                    200: "#FFEBB1",
+                    300: "#FFDC8A",
+                    400: "#FFCE6D",
+                    500: "#FFB73D",
+                    600: "#DB932C",
+                    700: "#B7731E",
+                    800: "#935513",
+                    900: "##7A400B",
+                },
+                danger: {
+                    100: "#FFE7D5",
+                    200: "#FFC9AC",
+                    300: "#FFA582",
+                    400: "#FF8263",
+                    500: "#FF4830",
+                    600: "#DB2923",
+                    700: "#B7181F",
+                    800: "#930F1F",
+                    900: "#7A0920",
+                },
+                body: "#454F5B",
+                heading: "#161C24",
+                "main-bg": "#F4F6F8",
+            },
+            spacing: {
+                0: "0px",
+                1: "4px",
+                2: "8px",
+                3: "16px",
+                4: "24px",
+                5: "32px",
+                6: "48px",
+                7: "56px",
+                8: "64px",
+            },
+            padding: {
+                0: "0px",
+                1: "4px",
+                2: "8px",
+                3: "16px",
+                4: "24px",
+                5: "32px",
+                6: "48px",
+                7: "56px",
+                8: "64px",
+            },
+            gap: {
+                0: "0px",
+                1: "4px",
+                2: "8px",
+                3: "16px",
+                4: "24px",
+                5: "32px",
+                6: "48px",
+                7: "56px",
+                8: "64px",
+            },
+            height: {
+                0: "0px",
+                1: "4px",
+                2: "8px",
+                3: "16px",
+                4: "24px",
+                5: "32px",
+                6: "48px",
+                7: "56px",
+                8: "64px",
+            },
+            width: {
+                0: "0px",
+                1: "4px",
+                2: "8px",
+                3: "16px",
+                4: "24px",
+                5: "32px",
+                6: "48px",
+                7: "56px",
+                8: "64px",
+            },
+            borderRadius: {
+                0: "0px",
+                1: "4px",
+                2: "8px",
+                3: "16px",
+                4: "24px",
+                5: "32px",
+                6: "48px",
+                7: "56px",
+                8: "64px",
+            },
+            boxShadow: {
+                container:
+                    "-8px 5px 7.8px -1px rgba(71, 88, 224, 0.03), 9px -1px 7.8px -1px rgba(71, 88, 224, 0.04)",
+            },
+        },
+    },
+    plugins: [],
+});
