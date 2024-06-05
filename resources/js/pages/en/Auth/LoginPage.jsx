@@ -31,12 +31,14 @@ const LoginPage = () => {
     const navigate = useNavigate();
 
     const setToken = useUserInfoStore((state) => state.setToken);
+    const setEmail = useUserInfoStore((state) => state.setEmail);
 
     const onSubmit = async (loginData) => {
         const { ok, data } = await loginApi(loginData);
 
         if (ok) {
             setToken(data.token);
+            setEmail(data.email);
             navigate("/");
             toast.success(data.message);
         } else {
@@ -55,7 +57,7 @@ const LoginPage = () => {
             </div>
             <div className=" lg:col-span-5 lg:p-8 xl:col-span-4 2xl:col-span-4 flex flex-col items-center col-span-12">
                 <form
-                    className="3xl:p-6 lg:p-0 flex flex-col items-center gap-4"
+                    className="lg:p-0 3xl:p-6 flex flex-col items-center gap-4"
                     onSubmit={handleSubmit(onSubmit)}
                 >
                     <div className="3xl:mt-24 flex flex-col gap-4 mt-12">
