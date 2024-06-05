@@ -3,23 +3,21 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Mail\Mailables\Attachment;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
 class DataMapperMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public $data; // The processed data
-    public $filePath; // The path to the CSV file
-
-    public function __construct($data, $filePath)
-    {
-        $this->data = $data;
-        $this->filePath = $filePath;
+    public function __construct(
+        public string $filePath,
+        public string $fileName
+    ) {
     }
 
     /**
@@ -50,8 +48,8 @@ class DataMapperMail extends Mailable
     public function attachments(): array
     {
         return [
-            \Illuminate\Mail\Mailables\Attachment::fromPath($this->filePath)
-                ->as('processed_data.csv')
+            Attachment::fromPath($this->filePath)
+                ->as($this->fileName)
                 ->withMime('text/csv'),
         ];
     }

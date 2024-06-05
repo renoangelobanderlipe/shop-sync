@@ -17,7 +17,15 @@ class UploadDataMapperRequest extends BaseFormRequest
             "file" => "required|file",
             "fields" => "required|array",
             "limit" => "required|integer",
+            "chunk" => "required|integer",
             "email" => "required|email"
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            "fields.*" => "The fields in Step 1 and 2 must not be empty"
         ];
     }
 }

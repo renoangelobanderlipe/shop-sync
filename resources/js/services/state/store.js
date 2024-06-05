@@ -4,7 +4,10 @@ export const useUserInfoStore = create((set) => ({
     email: "",
     token: localStorage.getItem("token") || null,
 
-    setEmail: (email) => set({ email }),
+    setEmail: (email) => {
+        set({ email });
+        localStorage.setItem("email", email);
+    },
 
     setToken: (token) => {
         set({ token });
@@ -13,7 +16,8 @@ export const useUserInfoStore = create((set) => ({
 
     clearToken: () => {
         set({ token: "" });
-        localStorage.removeItem("token");
+        localStorage.removeItemD("token");
+        localStorage.removeItemD("email");
     },
 }));
 

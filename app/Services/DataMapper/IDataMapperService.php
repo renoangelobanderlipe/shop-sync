@@ -2,9 +2,9 @@
 
 namespace App\Services\DataMapper;
 
-use App\DTO\DataMapperDTO;
+use Illuminate\Http\Request;
 
 interface IDataMapperService
 {
-    public function uploadFile(DataMapperDTO $dataMapperDTO);
+    public function uploadFile(Request $request);
 }
