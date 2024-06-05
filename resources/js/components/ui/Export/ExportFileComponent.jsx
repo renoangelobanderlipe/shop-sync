@@ -1,29 +1,60 @@
-import ContentHeaderComponent from "../PageHeader/ContentHeaderComponent";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Alert, Button, Input, Typography } from "@material-tailwind/react";
-import { InformationCircleIcon } from "@heroicons/react/24/solid";
-import { handleApiErrors, parseFileName } from "../../../utils/helpers";
-import { uploadDataMapper } from "../../../services/api/api";
-import toast from "react-hot-toast";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 import {
     useDataMapperStore,
-    useExportDataStore,
+    useUserInfoStore,
 } from "../../../services/state/store";
+import { InformationCircleIcon } from "@heroicons/react/24/solid";
+import ContentHeaderComponent from "./../PageHeader/ContentHeaderComponent";
+import { uploadDataMapper } from "@services/api/api";
+import { handleApiErrors } from "@utils/helpers";
+import toast from "react-hot-toast";
+const schema = z.object({
+    file: z
+        .instanceof(FileList)
+        .refine((files) => files.length === 1, {
+            message: "Exactly one file is required.",
+        })
+        .transform((files) => files[0]), // Extract the single file
+    chunk: z
+        .string()
+        .transform((value) => {
+            const parsed = parseInt(value, 10);
+            return !isNaN(parsed) && parsed > 0 ? parsed : 0;
+        })
+        .refine((value) => value > 0, {
+            message: "Chunk size is required and must be less than limit.",
+        }),
+    limit: z
+        .string()
+        .transform((value) => {
+            const parsed = parseInt(value, 10);
+            return !isNaN(parsed) && parsed > 0 ? parsed : 0;
+        })
+        .refine((value) => value > 0, {
+            message: "Limit is required and must be a positive number.",
+        }),
+    email: z.string().email(),
+});
 
 const ExportFileComponent = () => {
+    const email = useUserInfoStore((state) => state.email);
+    const {
+        register,
+        handleSubmit,
+        setError,
+        watch,
+        formState: { errors, isSubmitting },
+    } = useForm({
+        defaultValues: { email: email },
+        resolver: zodResolver(schema),
+    });
+
     const leftField = useDataMapperStore((state) => state.leftField);
     const rightField = useDataMapperStore((state) => state.rightField);
-
-    const email = useExportDataStore((state) => state.email);
-    const setEmail = useExportDataStore((state) => state.setEmail);
-
-    const file = useExportDataStore((state) => state.file);
-    const setFile = useExportDataStore((state) => state.setFile);
-
-    const limit = useExportDataStore((state) => state.limit);
-    const setLimit = useExportDataStore((state) => state.setLimit);
-
-    const fileName = useExportDataStore((state) => state.fileName);
-    const setFileName = useExportDataStore((state) => state.setFileName);
 
     const mergedFields = leftField.reduce(
         (result, { title: leftTitle }, index) => {
@@ -35,34 +66,23 @@ const ExportFileComponent = () => {
         {},
     );
 
-    const handleFile = async (event) => {
-        const file = event.target.files[0];
-
-        if (file) {
-            setFile(file);
-            parseFileName(file, setFileName);
-        }
-    };
-
-    const handleSubmit = async (event) => {
-        event.preventDefault();
-        const dataParams = {
-            file: file,
+    const onSubmit = async (params) => {
+        const { data, ok } = await uploadDataMapper({
+            ...params,
             fields: mergedFields,
-            limit: limit,
-            email: email,
-        };
-
-        const { data, ok } = await uploadDataMapper(dataParams);
+        });
         if (ok) {
             toast.success(data.success);
         } else {
+            setError("root", {
+                message: data.error,
+            });
             handleApiErrors(data);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
             <div>
                 <div className="flex flex-col gap-4">
                     <ContentHeaderComponent
@@ -80,9 +100,9 @@ const ExportFileComponent = () => {
                             >
                                 File to be converted
                             </Typography>
-                            <div className="flex rounded-5">
+                            <div className="rounded-5 flex">
                                 <label className="w-fit rounded-l-[6px] border-b-[1px] border-l-[1px] border-t-[1px] border-[#607D8B] bg-white p-2 text-[14px]  !text-neutral-700 lg:min-w-[300px]">
-                                    {fileName}
+                                    {watch("file")?.[0]?.name || "Choose File"}
                                 </label>
                                 <label
                                     htmlFor="baseFile"
@@ -91,10 +111,11 @@ const ExportFileComponent = () => {
                                     Choose File
                                 </label>
                                 <input
+                                    {...register("file")}
+                                    error={errors.file}
                                     id="baseFile"
                                     type="file"
                                     className="hidden"
-                                    onChange={handleFile}
                                 />
                             </div>
                             <Typography
@@ -106,8 +127,13 @@ const ExportFileComponent = () => {
                                 Upload a CSV File that contains the data you
                                 want to convert.
                             </Typography>
+                            {errors.file && (
+                                <div className="text-red-500">
+                                    {errors.file.message}
+                                </div>
+                            )}
                         </div>
-                        <div className="flex flex-col gap-2">
+                        <div>
                             <Typography
                                 variant="paragraph"
                                 color="black"
@@ -116,12 +142,41 @@ const ExportFileComponent = () => {
                                 Data Limit
                             </Typography>
                             <Input
+                                {...register("limit")}
                                 type="number"
-                                value={limit}
-                                className="!w-[86px]"
-                                min={1}
-                                onChange={(e) => setLimit(e.target.value)}
+                                placeholder="Data Limit"
                             />
+                            {errors.limit && (
+                                <div className="text-red-500">
+                                    {errors.limit.message}
+                                </div>
+                            )}
+                            <Typography
+                                variant="paragraph"
+                                color="blue-gray"
+                                className="text-[12px]"
+                            >
+                                Enter the limit of data rows to be exported.
+                            </Typography>
+                        </div>
+                        <div>
+                            <Typography
+                                variant="paragraph"
+                                color="black"
+                                className="font-bold"
+                            >
+                                Batch Processing
+                            </Typography>
+                            <Input
+                                {...register("chunk")}
+                                type="number"
+                                placeholder="Batch Processing"
+                            />
+                            {errors.chunk && (
+                                <div className="text-red-500">
+                                    {errors.chunk.message}
+                                </div>
+                            )}
                             <Typography
                                 variant="paragraph"
                                 color="blue-gray"
@@ -132,6 +187,7 @@ const ExportFileComponent = () => {
                         </div>
                     </div>
                 </div>
+
                 <div className="flex flex-col gap-4">
                     <ContentHeaderComponent
                         title={"Export File"}
@@ -139,6 +195,7 @@ const ExportFileComponent = () => {
                             "Download the file or send it to your email address."
                         }
                     />
+
                     <div className="flex flex-col gap-2">
                         <Typography
                             variant="paragraph"
@@ -148,23 +205,39 @@ const ExportFileComponent = () => {
                             Email Address
                         </Typography>
                         <Input
+                            {...register("email")}
                             type="email"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            placeholder="Email"
                         />
+                        {errors.email && (
+                            <div className="text-red-500">
+                                {errors.email.message}
+                            </div>
+                        )}
                     </div>
-                    <div className="flex flex-col gap-3 lg:flex-row">
+
+                    <div className="lg:flex-row flex flex-col gap-3">
                         <Button variant="outlined" size="md" type="submit">
                             Download CSV File
                         </Button>
 
-                        <Button variant="filled" size="md" type="submit">
-                            Send to Email
+                        <Button
+                            variant="filled"
+                            size="md"
+                            type="submit"
+                            disabled={isSubmitting}
+                        >
+                            {isSubmitting ? "Loading..." : "Send to Email"}
                         </Button>
                     </div>
+                    {errors.root && (
+                        <div className="text-red-500">
+                            {errors.root.message}
+                        </div>
+                    )}
                     <Alert
                         color="blue"
-                        icon={<InformationCircleIcon className="h-4 w-4" />}
+                        icon={<InformationCircleIcon className="w-4 h-4" />}
                     >
                         Large files over 10 MB must be sent to your email for
                         download.
