@@ -52,6 +52,24 @@ Ensure you have the following tools and technologies installed:
    - Replace the contents of your local `.env` file with the provided one.
    - The `.env` file is located in the root directory of the project.
 
+7. **Enable Jobs and Queues**
+   - Laravel uses queues to defer the processing of a time-consuming task, such as sending emails or processing file uploads, to a later time. This can significantly speed up web requests to your application.
+   - First, configure your queue driver in the `.env` file. For development, you might use the `database` driver:
+     ```sh
+     QUEUE_CONNECTION=database
+     ```
+   - Next, create a jobs table to store the queued jobs. Run the following Artisan command:
+     ```sh
+     php artisan queue:table
+     php artisan migrate
+     ```
+   - To start processing jobs, you need to run the queue worker. Open a new terminal window and run:
+     ```sh
+     php artisan queue:work
+     ```
+   - This command will start a queue worker that will process jobs in real-time.
+   - Ensure jobs and workers are running to provide fast frontend responses and process work in the background, especially when exporting data.
+
 ### Additional Setup
 
 1. **Modify WampServer Settings**
